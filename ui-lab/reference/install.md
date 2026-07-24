@@ -1,4 +1,4 @@
-# /zuhlke-design install
+# /ui-lab install
 
 Ensure both design engines used by `prototype` are available in the current project's `.claude/skills/`. Install via the `skills` CLI, which fetches the published skills from GitHub.
 

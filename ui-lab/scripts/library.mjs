@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // library.mjs — add a peg to the taste library.
 // Claude does the vision analysis, then calls this with the resulting metadata.
-// It copies the image into ~/.agents/.zuhlke-design/library/<slug>/ and writes
+// It copies the image into ~/.agents/.ui-lab/library/<slug>/ and writes
 // a <slug>.md sidecar whose frontmatter gallery.mjs reads back.
 //
 // Usage:
@@ -25,7 +25,7 @@ function opt(name) { const i = argv.indexOf(`--${name}`); return i !== -1 ? argv
 
 const imagePath = opt('image');
 const metaArg = opt('meta');
-const DATA_DIR = opt('data') || path.join(os.homedir(), '.agents', '.zuhlke-design');
+const DATA_DIR = opt('data') || path.join(os.homedir(), '.agents', '.ui-lab');
 
 if (!imagePath || !metaArg) {
   console.error('Both --image and --meta are required.');

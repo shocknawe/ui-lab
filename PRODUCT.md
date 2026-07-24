@@ -10,7 +10,7 @@ Design-minded developers, product designers, and creative technologists who are 
 
 ## Product Purpose
 
-`zuhlke-design` is a Claude Code skill that turns a design brief and a curated taste library into competing, production-grade web-design prototypes. It operationalizes the anti-AI-slop workflow: cultivate taste (save reference images as "pegs"), cast a wide net (generate ten prototypes across five style families and two design engines), pick a direction in a side-by-side gallery, refine it, then populate it with generated hero assets.
+`ui-lab` is a Claude Code skill that turns a design brief and a curated taste library into competing, production-grade web-design prototypes. It operationalizes the anti-AI-slop workflow: cultivate taste (save reference images as "pegs"), cast a wide net (generate ten prototypes across five style families and two design engines), pick a direction in a side-by-side gallery, refine it, then populate it with generated hero assets.
 
 Success means the user ends up with a real, editable prototype that looks like a deliberate design decision — not a template, not a "vibe", and not the default AI palette.
 

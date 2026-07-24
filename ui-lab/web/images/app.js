@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Zuhlke design — images viewer
+   UI Lab — images viewer
    Fetches /data.json, renders a selectable thumbnail grid under a sticky
    header, and POSTs the chosen action to /apply.
    Self-contained: no external libraries or network calls beyond same-origin.

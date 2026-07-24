@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// poll-selection.mjs — wait for a fresh user selection from a zuhlke-design viewer.
+// poll-selection.mjs — wait for a fresh user selection from a ui-lab viewer.
 // Reads state/selected.json and returns only when a record newer than --since is found.
 //
 // Usage:
@@ -21,7 +21,7 @@ function flag(name) {
   return next !== undefined && !next.startsWith('--') ? next : true;
 }
 
-const DATA_DIR = flag('data') || path.join(os.homedir(), '.agents', '.zuhlke-design');
+const DATA_DIR = flag('data') || path.join(os.homedir(), '.agents', '.ui-lab');
 const STATE_FILE = path.join(DATA_DIR, 'state', 'selected.json');
 const SINCE = Number(flag('since') || 0);
 const TIMEOUT_MS = Number(flag('timeout') || 0) * 1000;

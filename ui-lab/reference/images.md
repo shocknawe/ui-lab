@@ -1,4 +1,4 @@
-# /zuhlke-design images
+# /ui-lab images
 
 Populate the selected prototype with generated **hero imagery / assets**, then let the user pick in a thumbnail viewer. This is the last step of the transcript: nail the hero image (and its color variations — the "Alpine Glow" moment) once the layout is chosen.
 
@@ -6,13 +6,13 @@ Populate the selected prototype with generated **hero imagery / assets**, then l
 
 ## Step 1 — resolve the target prototype
 
-Read `~/.agents/.zuhlke-design/state/selected.json` for the prototype the user chose (`kind:"prototype"`), or take an explicit target from the user. Load that prototype's style + its peg `image_prompt` from the library — that prompt anchors the hero generation.
+Read `~/.agents/.ui-lab/state/selected.json` for the prototype the user chose (`kind:"prototype"`), or take an explicit target from the user. Load that prototype's style + its peg `image_prompt` from the library — that prompt anchors the hero generation.
 
 ## Step 2 — generate the images  *(Higgsfield boundary — currently stubbed)*
 
 Generate 4 hero candidates for the prototype's hero, guided by the style's `image_prompt` and the 4-part prompt's guardrails.
 
-- **When the Higgsfield MCP is available:** call it here (e.g. GPT-Image for stills), request high-quality ~2K images, save them into `~/.agents/.zuhlke-design/images/<session>/`.
+- **When the Higgsfield MCP is available:** call it here (e.g. GPT-Image for stills), request high-quality ~2K images, save them into `~/.agents/.ui-lab/images/<session>/`.
 - **Stub (now):** copy/generate placeholder images into that folder so the viewer is fully exercisable. Keep this the *only* place that knows about generation, so swapping in the MCP is a one-spot change.
 
 Write a `data.json` next to the images:
@@ -45,7 +45,7 @@ SINCE=$(node -e 'console.log(Date.now())')
 node scripts/poll-selection.mjs --since "$SINCE"
 ```
 
-It returns the saved `~/.agents/.zuhlke-design/state/selected.json` once the user clicks an action:
+It returns the saved `~/.agents/.ui-lab/state/selected.json` once the user clicks an action:
 ```json
 { "kind": "images", "action": "apply", "ids": ["img-4"], "ts": 1753372800000 }
 ```

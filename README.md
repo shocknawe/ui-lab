@@ -1,4 +1,4 @@
-# zuhlke-design
+# ui-lab
 
 A Claude Code skill for taste-driven, anti-AI-slop web design.
 
@@ -8,7 +8,7 @@ It operationalizes the workflow from [`transcript.md`](transcript.md): **cultiva
 
 ## What it does
 
-`/zuhlke-design` gives you four commands:
+`/ui-lab` gives you four commands:
 
 | Command | Purpose |
 |---|---|
@@ -37,7 +37,7 @@ npx skills add Leonxlnx/taste-skill
 Or, from within Claude Code:
 
 ```
-/zuhlke-design install
+/ui-lab install
 ```
 
 If the shorthand doesn't resolve, fall back to the explicit URL form:
@@ -52,19 +52,19 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill design-taste-fron
 ## Quick start
 
 ```
-/zuhlke-design install
+/ui-lab install
 
 # Save a design reference image
-/zuhlke-design pegs ~/Downloads/ref-landing.jpg
+/ui-lab pegs ~/Downloads/ref-landing.jpg
 
 # See your taste library
-/zuhlke-design pegs library
+/ui-lab pegs library
 
 # Generate 10 prototypes for a brief
-/zuhlke-design prototype "Landing page for Kestrel, an AI analytics platform for startups"
+/ui-lab prototype "Landing page for Kestrel, an AI analytics platform for startups"
 
 # Populate the chosen prototype with hero images
-/zuhlke-design images
+/ui-lab images
 ```
 
 ---
@@ -74,7 +74,7 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill design-taste-fron
 ### Code lives in the skill; your data lives in `~/.agents`
 
 ```
-~/.agents/.zuhlke-design/
+~/.agents/.ui-lab/
   library/<slug>/image.<ext>      # saved pegs
   library/<slug>/<slug>.md        # peg tags and vocabulary
   prototypes/<session>/*.html       # generated prototypes
@@ -87,7 +87,7 @@ npx skills add https://github.com/Leonxlnx/taste-skill --skill design-taste-fron
 ### Skill structure
 
 ```
-zuhlke-design/
+ui-lab/
   SKILL.md                        # router: parses command, loads reference
   reference/
     install.md                    # engine install instructions
@@ -120,14 +120,14 @@ For each brief, the skill:
 `scripts/gallery.mjs` is a zero-dependency Node server. Run it as:
 
 ```bash
-node zuhlke-design/scripts/gallery.mjs peg-library
-node zuhlke-design/scripts/gallery.mjs prototype --session <id>
-node zuhlke-design/scripts/gallery.mjs images --session <id>
+node ui-lab/scripts/gallery.mjs peg-library
+node ui-lab/scripts/gallery.mjs prototype --session <id>
+node ui-lab/scripts/gallery.mjs images --session <id>
 ```
 
-It prints a URL like `ZUHLKE_URL=http://localhost:4123`, serves the matching viewer, exposes `/data.json`, and writes user selections to `~/.agents/.zuhlke-design/state/selected.json`.
+It prints a URL like `UI_LAB_URL=http://localhost:4123`, serves the matching viewer, exposes `/data.json`, and writes user selections to `~/.agents/.ui-lab/state/selected.json`.
 
-See [`zuhlke-design/CONTRACT.md`](zuhlke-design/CONTRACT.md) for the full data contract.
+See [`ui-lab/CONTRACT.md`](ui-lab/CONTRACT.md) for the full data contract.
 
 ---
 
@@ -142,4 +142,4 @@ See [`zuhlke-design/CONTRACT.md`](zuhlke-design/CONTRACT.md) for the full data c
 
 ## License
 
-The `zuhlke-design` skill code is provided as-is for personal and commercial use. The bundled `references/impeccable/` and `references/taste-skill/` retain their original licenses (Apache 2.0 and MIT respectively).
+The `ui-lab` skill code is provided as-is for personal and commercial use. The bundled `references/impeccable/` and `references/taste-skill/` retain their original licenses (Apache 2.0 and MIT respectively).

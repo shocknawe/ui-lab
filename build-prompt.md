@@ -1,6 +1,6 @@
-# Build Prompt: `zuhlke-design` skill
+# Build Prompt: `ui-lab` skill
 
-Create a user-invocable Claude Code skill named **`zuhlke-design`** that operationalizes the anti-AI-slop web design workflow from `transcript.md` (cultivate taste → cast a wide net of prototypes → iterate → generate assets). Invoked as `/zuhlke-design [command]`.
+Create a user-invocable Claude Code skill named **`ui-lab`** that operationalizes the anti-AI-slop web design workflow from `transcript.md` (cultivate taste → cast a wide net of prototypes → iterate → generate assets). Invoked as `/ui-lab [command]`.
 
 Use the `skill-creator` skill to scaffold, and follow the structure below exactly.
 
@@ -17,7 +17,7 @@ Use the `skill-creator` skill to scaffold, and follow the structure below exactl
 
 ## Skill metadata
 
-- `name: zuhlke-design`
+- `name: ui-lab`
 - `user-invocable: true`
 - `argument-hint: "[install · pegs [<image>|library] · prototype <brief> · images]"`
 - `description:` written to trigger on: cultivating a design taste/inspiration library, saving design reference images ("pegs"), generating multiple landing-page prototypes in distinct styles, comparing design variants side by side, iterating/refining a chosen design, and populating a design with generated hero imagery. Anti-slop, taste-driven web design.
@@ -27,7 +27,7 @@ Use the `skill-creator` skill to scaffold, and follow the structure below exactl
 ## Directory structure to produce
 
 ```
-zuhlke-design/
+ui-lab/
   SKILL.md                       # router: parses [command], loads matching reference
   reference/
     install.md
@@ -52,7 +52,7 @@ zuhlke-design/
 Resolve the home directory at runtime (`os.homedir()`), so macOS `~/.agents/...` and Windows `%USERPROFILE%\.agents\...` both work with no branching.
 
 ```
-~/.agents/.zuhlke-design/
+~/.agents/.ui-lab/
   library/<slug>/image.jpg
   library/<slug>/<slug>.md        # frontmatter tags + prose
   prototypes/<session>/*.html      # 10 generated prototypes
@@ -69,7 +69,7 @@ Resolve the home directory at runtime (`os.homedir()`), so macOS `~/.agents/...`
 Ensure `impeccable` and `design-taste-frontend` are available in the project's `.claude/skills/`. For each missing one, run `npx skills add <repo>` (impeccable: `pbakaus/impeccable`, taste skill: `Leonxlnx/taste-skill`). Report what was installed vs already present. This is a prerequisite for `prototype`.
 
 ### `pegs <image.jpg>`
-1. Copy the jpg into `~/.agents/.zuhlke-design/library/<slug>/image.jpg` (slug from a short description).
+1. Copy the jpg into `~/.agents/.ui-lab/library/<slug>/image.jpg` (slug from a short description).
 2. Vision-analyze the image and write `<slug>.md` with frontmatter tags mirroring the video's inspiration app:
    - `design_family` (e.g. print-tech, vast-quiet, dither-mono, classical-remix)
    - `keywords` (design vocabulary)
@@ -106,7 +106,7 @@ The heart of the skill. Requires `install` to have run.
 
 - One Node script, no external deps (use built-in `http`, `fs`, `os`, `path`).
 - Modes: `peg-library` | `prototype` | `images` (arg or env). Each serves the matching `web/*` folder.
-- Serves static assets, a `/data.json` endpoint (live library/prototype/image data), and `POST /select` (and `/apply`) endpoints that write to `~/.agents/.zuhlke-design/state/`.
+- Serves static assets, a `/data.json` endpoint (live library/prototype/image data), and `POST /select` (and `/apply`) endpoints that write to `~/.agents/.ui-lab/state/`.
 - Picks a free port, prints the URL, exits cleanly. No JS-`alert`/`confirm` dialogs (they block automation) — use in-page popups/DOM.
 
 ---
@@ -121,7 +121,7 @@ The heart of the skill. Requires `install` to have run.
 **Phase 2 — build the router + reference files + scripts** (`SKILL.md`, `reference/*.md`, `gallery.mjs`, `library.mjs`) once the data contract is fixed.
 
 **Phase 3 — verify functionality with subagents.** Spawn verification subagent(s) to:
-- Boot `gallery.mjs` in each mode against seeded sample data in a temp `~/.agents/.zuhlke-design/`; confirm it serves, returns `/data.json`, and that `POST /select`/`/apply` write `state/` correctly.
+- Boot `gallery.mjs` in each mode against seeded sample data in a temp `~/.agents/.ui-lab/`; confirm it serves, returns `/data.json`, and that `POST /select`/`/apply` write `state/` correctly.
 - Load each viewer headlessly (or via the chrome tools), confirm it renders the seeded data, that select/apply buttons hit the endpoints, and that no blocking dialogs fire.
 - Confirm `install` adds both `impeccable` and `design-taste-frontend` to `.claude/skills/` via `npx skills add`.
 - Confirm `pegs` writes `image.jpg` + a well-formed `<slug>.md`.
@@ -137,12 +137,12 @@ Each verification subagent returns a concise pass/fail report (the final report 
 - Static web assets only — no build step, no bundler, no CDN.
 - Mirror impeccable's router discipline: `SKILL.md` dispatches, per-command `reference/*.md` owns the flow.
 - Don't make `prototype` block on impeccable's missing PRODUCT.md.
-- Keep the skill self-contained; user data stays under `~/.agents/.zuhlke-design/`.
+- Keep the skill self-contained; user data stays under `~/.agents/.ui-lab/`.
 
 ## Acceptance criteria
 
-- `/zuhlke-design install` installs both engines idempotently.
-- `/zuhlke-design pegs <jpg>` adds a tagged peg; `/zuhlke-design pegs library` opens a working localhost gallery of all pegs.
-- `/zuhlke-design prototype "<brief>"` produces 10 prototypes (5 styles × impeccable/taste), a working 5×2 select gallery with popup, and a working 3-variation refine loop.
-- `/zuhlke-design images` opens a working sticky-header thumbnail viewer with multi-select and apply (Higgsfield stubbed).
+- `/ui-lab install` installs both engines idempotently.
+- `/ui-lab pegs <jpg>` adds a tagged peg; `/ui-lab pegs library` opens a working localhost gallery of all pegs.
+- `/ui-lab prototype "<brief>"` produces 10 prototypes (5 styles × impeccable/taste), a working 5×2 select gallery with popup, and a working 3-variation refine loop.
+- `/ui-lab images` opens a working sticky-header thumbnail viewer with multi-select and apply (Higgsfield stubbed).
 - All three viewers pass the Phase 3 verification checks.

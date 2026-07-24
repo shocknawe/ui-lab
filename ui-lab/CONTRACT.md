@@ -7,8 +7,8 @@ node gallery.mjs <mode> [--session <id>] [--data <dir>] [--multi] [--port <n>]
 ```
 
 - `<mode>` ∈ `peg-library` | `prototype` | `images` — selects which `web/<mode>/` folder is served at `/`.
-- `--data` defaults to `~/.agents/.zuhlke-design` (resolved via `os.homedir()`).
-- On boot the server picks a free port (start 4123, increment if busy) and prints exactly one line: `ZUHLKE_URL=http://localhost:<port>` so the caller can capture it.
+- `--data` defaults to `~/.agents/.ui-lab` (resolved via `os.homedir()`).
+- On boot the server picks a free port (start 4123, increment if busy) and prints exactly one line: `UI_LAB_URL=http://localhost:<port>` so the caller can capture it.
 - No `alert`/`confirm`/`prompt` anywhere. Confirmation UI is in-page DOM.
 
 ## Routes (all modes)

@@ -220,7 +220,7 @@
     setCount(0);
     showState("🗂️", "No pegs yet", [
       el("p", { text: "Your pegs library is empty. Add a reference image to get started:" }),
-      el("p", {}, [el("code", { text: "/zuhlke-design pegs <image.jpg>" })]),
+      el("p", {}, [el("code", { text: "/ui-lab pegs <image.jpg>" })]),
       el("p", { class: "muted", text: "Once added, each peg shows its design family, keywords, image prompt and copy brief here." })
     ]);
   }

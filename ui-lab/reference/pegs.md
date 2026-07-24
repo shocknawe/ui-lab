@@ -1,4 +1,4 @@
-# /zuhlke-design pegs
+# /ui-lab pegs
 
 Two modes, dispatched by the argument after `pegs`:
 - a **path to an image** → *add* a peg
@@ -13,11 +13,11 @@ A "peg" is a design reference image the user liked (a screenshot from Dribbble, 
 The point is to capture not just the image but the *vocabulary* of its design, mirroring the inspiration app in the transcript.
 
 1. **Look at the image.** Analyze it visually and produce:
-   - `design_family` — a short, reusable style name (e.g. `print-tech`, `vast-quiet`, `dither-mono`, `classical-remix`, `terminal-native`, `editorial-serif`). Reuse an existing family name from the library when the peg clearly belongs to one (check `~/.agents/.zuhlke-design/library/*/` sidecars) so pegs cluster.
+   - `design_family` — a short, reusable style name (e.g. `print-tech`, `vast-quiet`, `dither-mono`, `classical-remix`, `terminal-native`, `editorial-serif`). Reuse an existing family name from the library when the peg clearly belongs to one (check `~/.agents/.ui-lab/library/*/` sidecars) so pegs cluster.
    - `keywords` — 4–8 concrete design-vocabulary terms (layout, type, color, texture, motion cues).
    - `image_prompt` — a prompt that could regenerate a *hero image* in this style (composition, subject, palette, mood).
    - `copy_brief` — a short brief describing how to build a *whole site* in this style (structure, type treatment, spacing, accent strategy, what to avoid).
-2. **Write it via the script** (it copies the image and writes the sidecar `~/.agents/.zuhlke-design/library/<slug>/`):
+2. **Write it via the script** (it copies the image and writes the sidecar `~/.agents/.ui-lab/library/<slug>/`):
    ```bash
    node scripts/library.mjs add --image "<path-to.jpg>" --meta /tmp/peg-meta.json
    ```
@@ -43,7 +43,7 @@ The point is to capture not just the image but the *vocabulary* of its design, m
 Open the localhost gallery of every peg with its tags:
 
 ```bash
-node scripts/gallery.mjs peg-library      # prints ZUHLKE_URL=http://localhost:PORT
+node scripts/gallery.mjs peg-library      # prints UI_LAB_URL=http://localhost:PORT
 ```
 
 Capture the printed URL, open it for the user, and let them browse (cards show thumbnail + family + keywords; clicking reveals the image prompt and copy brief with copy buttons). It's read-only. Kill the server when they're done.

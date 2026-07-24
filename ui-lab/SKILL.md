@@ -1,5 +1,5 @@
 ---
-name: zuhlke-design
+name: ui-lab
 description: >-
   Taste-driven, anti-AI-slop web design workflow. Use this whenever the user
   wants to cultivate a design inspiration/taste library, save reference design
@@ -10,7 +10,7 @@ description: >-
   library", "make me 5 different landing page directions", "prototype a few
   styles for X and let me pick", "refine this prototype into variations", or
   "generate a hero image for this page" — even when the user doesn't name the
-  skill. Runs as /zuhlke-design [install | pegs | prototype | images].
+  skill. Runs as /ui-lab [install | pegs | prototype | images].
 user-invocable: true
 argument-hint: "[install · pegs [<image>|library] · prototype <brief> · images]"
 allowed-tools:
@@ -21,13 +21,13 @@ Operationalizes the anti-slop design method from `transcript.md`: **cultivate ta
 
 ## How it's wired
 
-- **Code lives in this skill** (`scripts/`, `web/`). **User data lives in `~/.agents/.zuhlke-design/`** — resolved from the home dir, so macOS `~/.agents/...` and Windows `%USERPROFILE%\.agents\...` both work.
+- **Code lives in this skill** (`scripts/`, `web/`). **User data lives in `~/.agents/.ui-lab/`** — resolved from the home dir, so macOS `~/.agents/...` and Windows `%USERPROFILE%\.agents\...` both work.
 - `scripts/gallery.mjs` is one localhost server with three modes (`peg-library` | `prototype` | `images`); it serves the matching `web/<mode>/` viewer, a `/data.json` feed, and records the user's click to `state/selected.json`. The contract is in `CONTRACT.md`.
 - Two design engines power prototyping: **impeccable** and **design-taste-frontend** (the "taste skill"). The `install` command puts both in the project.
 
 Data layout:
 ```
-~/.agents/.zuhlke-design/
+~/.agents/.ui-lab/
   library/<slug>/image.<ext> + <slug>.md   # pegs (taste library)
   prototypes/<session>/*.html + data.json  # generated prototypes
   images/<session>/*.png + data.json       # generated hero assets
@@ -56,10 +56,10 @@ Data layout:
 Every viewer is launched the same way. Run the server in the background, capture the printed URL, open it, then wait for a fresh selection:
 
 ```bash
-node scripts/gallery.mjs <mode> [--session <id>] [--multi]   # prints ZUHLKE_URL=http://localhost:PORT
+node scripts/gallery.mjs <mode> [--session <id>] [--multi]   # prints UI_LAB_URL=http://localhost:PORT
 
 SINCE=$(node -e 'console.log(Date.now())')
 node scripts/poll-selection.mjs --since "$SINCE"               # blocks until the user clicks
 ```
 
-`poll-selection.mjs` returns the selected record from `~/.agents/.zuhlke-design/state/selected.json` only when its `ts` is newer than `$SINCE`, so stale selections from earlier steps are ignored. Open the URL for the user, then run the poll script to learn what they picked. Kill the server when the step is done. Never let the server trigger blocking dialogs.
+`poll-selection.mjs` returns the selected record from `~/.agents/.ui-lab/state/selected.json` only when its `ts` is newer than `$SINCE`, so stale selections from earlier steps are ignored. Open the URL for the user, then run the poll script to learn what they picked. Kill the server when the step is done. Never let the server trigger blocking dialogs.

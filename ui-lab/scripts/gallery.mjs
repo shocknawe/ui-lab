@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// gallery.mjs — single localhost server for the zuhlke-design skill.
+// gallery.mjs — single localhost server for the ui-lab skill.
 // Serves one of three viewers (peg-library | prototype | images) and the data
 // they render, and records the user's selection to state/selected.json.
 // Node built-ins only. See CONTRACT.md for the full data contract.
@@ -26,7 +26,7 @@ function flag(name) {
   const i = argv.indexOf(`--${name}`);
   return i !== -1 && (argv[i + 1] === undefined || !argv[i + 1].startsWith('--')) ? argv[i + 1] : (i !== -1 ? true : undefined);
 }
-const DATA_DIR = flag('data') || path.join(os.homedir(), '.agents', '.zuhlke-design');
+const DATA_DIR = flag('data') || path.join(os.homedir(), '.agents', '.ui-lab');
 const SESSION = flag('session');
 const MULTI = argv.includes('--multi');
 const WANT_PORT = flag('port') ? Number(flag('port')) : 4123;
@@ -200,7 +200,7 @@ const server = http.createServer(async (req, res) => {
 // server.listen() adds a one-shot 'listening' listener on every retry, and they
 // ALL fire once a port finally binds — printing a stale URL for each skipped
 // port. A single 'listening' handler that reads the actually-bound port avoids
-// that and guarantees exactly one ZUHLKE_URL line.
+// that and guarantees exactly one UI_LAB_URL line.
 let attemptsLeft = 40;
 let nextPort = WANT_PORT;
 server.on('error', (err) => {
@@ -209,8 +209,8 @@ server.on('error', (err) => {
 });
 server.on('listening', () => {
   const { port } = server.address();
-  console.log(`ZUHLKE_URL=http://localhost:${port}`);
-  console.error(`[zuhlke-design] ${MODE} viewer serving ${WEB_DIR}${SESSION ? ` (session ${SESSION})` : ''}`);
+  console.log(`UI_LAB_URL=http://localhost:${port}`);
+  console.error(`[ui-lab] ${MODE} viewer serving ${WEB_DIR}${SESSION ? ` (session ${SESSION})` : ''}`);
 });
 // sanity: web dir must exist
 if (!fss.existsSync(WEB_DIR)) { console.error(`Missing web dir: ${WEB_DIR}`); process.exit(1); }
