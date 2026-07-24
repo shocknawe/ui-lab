@@ -11,7 +11,7 @@ Use the `skill-creator` skill to scaffold, and follow the structure below exactl
 - `transcript.md` — the source video walkthrough. The skill implements its 3-step method.
 - `references/impeccable/` — the impeccable frontend skill (SKILL.md + scripts + reference/). Router pattern to mirror.
 - `references/taste-skill/SKILL.md` — the taste skill. Its internal skill `name:` is **`design-taste-frontend`**.
-- These `references/` copies are the install source for the `install` command (offline, reliable — do NOT fetch from GitHub).
+- The `install` command uses the `skills` CLI to fetch `impeccable` and `design-taste-frontend` from GitHub. The `references/` copies remain useful as local mirrors of the router discipline and skill structure.
 
 ---
 
@@ -66,7 +66,7 @@ Resolve the home directory at runtime (`os.homedir()`), so macOS `~/.agents/...`
 ## Commands
 
 ### `install`
-Ensure `impeccable` and `design-taste-frontend` are available in the project's `.claude/skills/`. For each missing one, copy it from `references/` into `.claude/skills/<name>/`. Report what was installed vs already present. This is a prerequisite for `prototype`.
+Ensure `impeccable` and `design-taste-frontend` are available in the project's `.claude/skills/`. For each missing one, run `npx skills add <repo>` (impeccable: `pbakaus/impeccable`, taste skill: `Leonxlnx/taste-skill`). Report what was installed vs already present. This is a prerequisite for `prototype`.
 
 ### `pegs <image.jpg>`
 1. Copy the jpg into `~/.agents/.zuhlke-design/library/<slug>/image.jpg` (slug from a short description).
@@ -123,7 +123,7 @@ The heart of the skill. Requires `install` to have run.
 **Phase 3 — verify functionality with subagents.** Spawn verification subagent(s) to:
 - Boot `gallery.mjs` in each mode against seeded sample data in a temp `~/.agents/.zuhlke-design/`; confirm it serves, returns `/data.json`, and that `POST /select`/`/apply` write `state/` correctly.
 - Load each viewer headlessly (or via the chrome tools), confirm it renders the seeded data, that select/apply buttons hit the endpoints, and that no blocking dialogs fire.
-- Confirm `install` copies both reference skills into `.claude/skills/`.
+- Confirm `install` adds both `impeccable` and `design-taste-frontend` to `.claude/skills/` via `npx skills add`.
 - Confirm `pegs` writes `image.jpg` + a well-formed `<slug>.md`.
 - Report pass/fail per check; fix or file precise repro steps for any failure.
 
@@ -133,7 +133,7 @@ Each verification subagent returns a concise pass/fail report (the final report 
 
 ## Constraints & non-goals
 
-- No external network calls at runtime except the Higgsfield MCP (and that's stubbed for now).
+- External network calls are limited to installing skills via `npx skills add` and the Higgsfield MCP (stubbed for now).
 - Static web assets only — no build step, no bundler, no CDN.
 - Mirror impeccable's router discipline: `SKILL.md` dispatches, per-command `reference/*.md` owns the flow.
 - Don't make `prototype` block on impeccable's missing PRODUCT.md.

@@ -38,7 +38,7 @@ Data layout:
 
 | Command | What it does | Reference |
 |---|---|---|
-| `install` | Install `impeccable` + `design-taste-frontend` into `.claude/skills/` if missing (prereq for `prototype`). | [reference/install.md](reference/install.md) |
+| `install` | Install `impeccable` + `design-taste-frontend` into `.claude/skills/` via `npx skills add` if missing (prereq for `prototype`). | [reference/install.md](reference/install.md) |
 | `pegs <image.jpg>` | Add a peg: copy the image into the library and vision-tag it. | [reference/pegs.md](reference/pegs.md) |
 | `pegs library` | Open the localhost gallery of all pegs. | [reference/pegs.md](reference/pegs.md) |
 | `prototype "<brief>"` | Generate 10 prototypes (5 styles × impeccable/taste), pick one in a gallery, refine in a loop. | [reference/prototype.md](reference/prototype.md) |

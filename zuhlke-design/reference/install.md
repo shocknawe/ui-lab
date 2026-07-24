@@ -1,26 +1,31 @@
 # /zuhlke-design install
 
-Ensure both design engines used by `prototype` are available in the current project's `.claude/skills/`. Copy from this skill's bundled `references/` (offline, reliable — do **not** fetch from GitHub).
+Ensure both design engines used by `prototype` are available in the current project's `.claude/skills/`. Install via the `skills` CLI, which fetches the published skills from GitHub.
 
-## Engines and their sources
+## Engines and install commands
 
-| Engine (skill `name`) | Source in this repo | Install target |
-|---|---|---|
-| `impeccable` | `references/impeccable/` | `.claude/skills/impeccable/` |
-| `design-taste-frontend` | `references/taste-skill/` | `.claude/skills/design-taste-frontend/` |
+| Engine (skill `name`) | Install command |
+|---|---|
+| `impeccable` | `npx skills add pbakaus/impeccable` |
+| `design-taste-frontend` (the "taste skill") | `npx skills add Leonxlnx/taste-skill` |
 
-Note the taste skill's folder is `references/taste-skill/` but its internal `name:` (and therefore its install target) is **`design-taste-frontend`**.
+Note the taste skill's repo is `Leonxlnx/taste-skill`, but its internal skill `name:` is **`design-taste-frontend`**; `skills` installs it as `.claude/skills/design-taste-frontend/`.
 
 ## Flow
 
-1. Resolve the repo root that holds `references/` (this skill's dev repo). If the bundled `references/impeccable/` and `references/taste-skill/` aren't found relative to the invocation, ask the user for the path to the repo containing them.
-2. Ensure `.claude/skills/` exists in the user's project.
-3. For each engine, if the target folder is **absent**, copy the whole source folder in. If it's **present**, leave it (idempotent) and report it as already installed.
-   ```bash
-   mkdir -p .claude/skills
-   [ -d .claude/skills/impeccable ] || cp -R references/impeccable .claude/skills/impeccable
-   [ -d .claude/skills/design-taste-frontend ] || cp -R references/taste-skill .claude/skills/design-taste-frontend
-   ```
-4. Report a short summary: which were installed now vs already present, and that `prototype` is ready to use.
+1. Check whether `.claude/skills/impeccable/` and `.claude/skills/design-taste-frontend/` already exist.
+2. For each engine:
+   - If the target folder is **absent**, run the matching `npx skills add` command above.
+   - If it's **present**, leave it (idempotent) and report it as already installed.
+3. Report a short summary: which were installed now vs already present, and that `prototype` is ready to use.
 
-Keep it quick and non-destructive. Never overwrite an existing install without asking.
+Keep it quick and non-destructive. Never overwrite or reinstall an existing skill without asking.
+
+## Fallback
+
+If `npx skills add <repo>` fails (e.g. CLI not available, shorthand not resolved), try the explicit URL form:
+
+```bash
+npx skills add https://github.com/pbakaus/impeccable --skill impeccable
+npx skills add https://github.com/Leonxlnx/taste-skill --skill design-taste-frontend
+```
