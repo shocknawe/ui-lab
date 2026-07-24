@@ -2,21 +2,24 @@
    Self-contained. System fonts only. Light + dark aware. */
 
 :root {
-  --bg: #f6f6f4;
-  --bg-elev: #ffffff;
-  --bg-sunken: #eeeeeb;
-  --text: #1b1b19;
-  --text-soft: #565651;
-  --text-faint: #8a8a83;
-  --border: #e2e2dd;
-  --border-strong: #d2d2cb;
-  --accent: #d33a2c;          /* Zühlke-ish warm red */
-  --accent-soft: #fbe9e6;
-  --chip-bg: #edece8;
-  --chip-text: #46453f;
-  --focus: #2f6fed;
-  --shadow-sm: 0 1px 2px rgba(24, 24, 20, 0.05);
-  --shadow-md: 0 6px 20px -8px rgba(24, 24, 20, 0.18);
+  /* Taste Workbench — graphite-neutral chrome (DESIGN.md).
+     The Deference Rule: the frame owns zero saturated color; all hue on
+     screen belongs to the peg reference images. */
+  --bg: #fbfbfc;              /* page */
+  --bg-elev: #ffffff;         /* surface */
+  --bg-sunken: #f2f3f5;       /* sunken neutral, one step under page */
+  --text: #1a1d24;            /* ink */
+  --text-soft: #5b6270;       /* slate — secondary text, ≥4.5:1 */
+  --text-faint: #868c98;      /* muted slate — non-essential placeholders only */
+  --border: #e6e7eb;          /* divider, ~10% ink */
+  --border-strong: #d4d6dc;
+  --accent: #1f2430;          /* graphite-ink — the only ink the chrome owns */
+  --accent-soft: #eceef2;     /* neutral graphite tint */
+  --chip-bg: #eef0f3;
+  --chip-text: #3a3f4a;
+  --focus: #2f6fed;           /* functional keyboard-focus ring only */
+  --shadow-sm: 0 1px 2px rgba(18, 22, 31, 0.05);
+  --shadow-md: 0 6px 20px -8px rgba(18, 22, 31, 0.18);
   --radius: 14px;
   --radius-sm: 9px;
   --maxw: 1180px;
@@ -26,18 +29,18 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #131311;
-    --bg-elev: #1d1d1a;
-    --bg-sunken: #242420;
-    --text: #f2f1ec;
-    --text-soft: #b6b5ad;
-    --text-faint: #86857c;
-    --border: #2e2e29;
-    --border-strong: #3a3a34;
-    --accent: #f26451;
-    --accent-soft: #35201c;
-    --chip-bg: #29281f;
-    --chip-text: #d3d2c7;
+    --bg: #0b0c0e;              /* page-dark */
+    --bg-elev: #141619;         /* surface-dark */
+    --bg-sunken: #1c1f24;
+    --text: #f1f2f4;            /* text-dark */
+    --text-soft: #9aa0ac;       /* slate-dark */
+    --text-faint: #6d727c;
+    --border: #2a2d33;          /* divider, ~10% white */
+    --border-strong: #3a3d45;
+    --accent: #e7e8ec;          /* graphite-ink-dark */
+    --accent-soft: #23262c;
+    --chip-bg: #21242a;
+    --chip-text: #c3c6cd;
     --focus: #6f9bff;
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
     --shadow-md: 0 10px 26px -10px rgba(0, 0, 0, 0.6);
@@ -361,7 +364,7 @@ img { max-width: 100%; display: block; }
   border-color: var(--accent);
 }
 @media (prefers-color-scheme: dark) {
-  .btn--copied { color: #1a0f0d; }
+  .btn--copied { color: #14161a; }
 }
 .btn .ico { width: 14px; height: 14px; flex: none; }
 
