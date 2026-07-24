@@ -10,7 +10,8 @@
 
   const $  = (sel, root = document) => root.querySelector(sel);
 
-  const grid      = $('#grid');
+  const tabsEl    = $('#tabs');
+  const panelsEl  = $('#panels');
   const stateEl   = $('#state');
   const briefEl   = $('#brief');
   const sessionEl = $('#session-name');
@@ -20,6 +21,13 @@
 
   // Track focus so it can be restored when the modal closes.
   let lastFocused = null;
+
+  // Display name for an engine. The data + ids keep "taste"; the UI shows
+  // "taste-skill" so the label matches how users refer to the skill.
+  const engineLabel = (engine) => (engine === 'taste' ? 'taste-skill' : engine);
+
+  // Live registry of tabs/panels for keyboard navigation and activation.
+  let tabButtons = [];
 
   /* ---- helpers -------------------------------------------------------- */
 
@@ -41,7 +49,8 @@
   }
 
   function showState(title, message) {
-    grid.hidden = true;
+    tabsEl.hidden = true;
+    panelsEl.hidden = true;
     stateEl.hidden = false;
     stateEl.replaceChildren(
       el('h2', { text: title }),
@@ -58,7 +67,7 @@
     const frame = el('iframe', {
       class: 'cell__frame',
       src: proto.src,
-      title: `${style} — ${engine} prototype`,
+      title: `${style} — ${engineLabel(engine)} prototype`,
       loading: 'lazy'
     });
 
@@ -69,16 +78,45 @@
     });
     continueBtn.addEventListener('click', () => openModal(proto, style));
 
-    return el('div', { class: 'cell' }, [
+    return el('div', { class: `cell cell--${engineClass}` }, [
       el('div', { class: 'cell__bar' }, [
-        el('div', { class: 'cell__labels' }, [
-          el('span', { class: `engine-tag engine-tag--${engineClass}`, text: engine }),
-          el('span', { class: 'cell__style', title: style, text: style })
-        ])
+        el('span', { class: `engine-tag engine-tag--${engineClass}`, text: engineLabel(engine) }),
+        continueBtn
       ]),
-      el('div', { class: 'cell__frame-wrap' }, [frame]),
-      el('div', { class: 'cell__foot' }, [continueBtn])
+      el('div', { class: 'cell__frame-wrap' }, [frame])
     ]);
+  }
+
+  /* ---- tabs ----------------------------------------------------------- */
+
+  // Show one style's panel; hide the rest. Uses ARIA tab semantics with a
+  // roving tabindex so only the active tab is in the tab order.
+  function activateTab(target, { focus = false } = {}) {
+    for (const btn of tabButtons) {
+      const selected = btn === target;
+      btn.setAttribute('aria-selected', String(selected));
+      btn.tabIndex = selected ? 0 : -1;
+      const panel = document.getElementById(btn.getAttribute('aria-controls'));
+      if (panel) panel.hidden = !selected;
+    }
+    if (focus) target.focus();
+    // Keep the active tab visible when the strip overflows.
+    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  function onTabKeydown(e) {
+    const i = tabButtons.indexOf(e.currentTarget);
+    if (i === -1) return;
+    let next = null;
+    switch (e.key) {
+      case 'ArrowRight': case 'ArrowDown': next = tabButtons[(i + 1) % tabButtons.length]; break;
+      case 'ArrowLeft':  case 'ArrowUp':   next = tabButtons[(i - 1 + tabButtons.length) % tabButtons.length]; break;
+      case 'Home': next = tabButtons[0]; break;
+      case 'End':  next = tabButtons[tabButtons.length - 1]; break;
+      default: return;
+    }
+    e.preventDefault();
+    activateTab(next, { focus: true });
   }
 
   function render(data) {
@@ -100,7 +138,38 @@
     const byStyleEngine = new Map();
     for (const p of protos) byStyleEngine.set(`${p.style}__${p.engine}`, p);
 
-    const rows = styles.map((style, i) => {
+    // Only render tabs for styles that actually have at least one prototype.
+    const shown = styles.filter(style =>
+      byStyleEngine.has(`${style}__impeccable`) || byStyleEngine.has(`${style}__taste`));
+
+    if (!shown.length) {
+      showState('No prototypes yet', 'The session has no prototypes to compare. Generate some and reload.');
+      return;
+    }
+
+    tabButtons = [];
+    const tabs = [];
+    const panels = [];
+
+    shown.forEach((style, i) => {
+      const tabId   = `tab-${i}`;
+      const panelId = `panel-${i}`;
+
+      const tab = el('button', {
+        class: 'tab',
+        type: 'button',
+        role: 'tab',
+        id: tabId,
+        'aria-controls': panelId,
+        'aria-selected': 'false',
+        tabIndex: -1,
+        text: style
+      });
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', onTabKeydown);
+      tabButtons.push(tab);
+      tabs.push(tab);
+
       const impeccable = byStyleEngine.get(`${style}__impeccable`);
       const taste      = byStyleEngine.get(`${style}__taste`);
 
@@ -108,25 +177,29 @@
       if (impeccable) cells.push(cell(impeccable, style));
       if (taste)      cells.push(cell(taste, style));
 
-      // Refine sessions contain only one engine per style (3 variations of the
-      // picked prototype). Single-engine rows render as one column so there are
-      // no empty placeholder cells.
+      // Refine sessions carry only one engine per style; a single-engine style
+      // renders as one column so there are no empty placeholder cells.
       const pairClass = cells.length === 1 ? 'pair pair--single' : 'pair';
       const pair = el('div', { class: pairClass });
       pair.append(...cells);
 
-      return el('section', { class: 'style-row', 'aria-label': `Style: ${style}` }, [
-        el('div', { class: 'style-row__head' }, [
-          el('span', { class: 'style-row__index', text: String(i + 1).padStart(2, '0') }),
-          el('h2', { class: 'style-row__name', text: style })
-        ]),
-        pair
-      ]);
+      panels.push(el('section', {
+        class: 'panel',
+        id: panelId,
+        role: 'tabpanel',
+        'aria-labelledby': tabId,
+        tabIndex: 0,
+        hidden: true
+      }, [pair]));
     });
 
-    grid.replaceChildren(...rows);
-    grid.hidden = false;
+    tabsEl.replaceChildren(...tabs);
+    panelsEl.replaceChildren(...panels);
+    tabsEl.hidden = false;
+    panelsEl.hidden = false;
     stateEl.hidden = true;
+
+    activateTab(tabButtons[0]);
   }
 
   /* ---- modal ---------------------------------------------------------- */
@@ -194,7 +267,7 @@
       el('p', { class: 'modal__eyebrow', text: 'Continue with' }),
       el('h2', { class: 'modal__title', id: 'modal-title', text: style }),
       el('div', { class: 'modal__meta' }, [
-        el('span', { class: `engine-tag engine-tag--${engineClass}`, text: proto.engine })
+        el('span', { class: `engine-tag engine-tag--${engineClass}`, text: engineLabel(proto.engine) })
       ]),
       el('p', { class: 'modal__text', id: 'modal-desc',
         text: 'Pick a next step for this prototype. Your choice is sent back to the terminal session.' }),
@@ -242,7 +315,7 @@
         el('div', { class: 'saved__check', 'aria-hidden': 'true', text: '✓' }),
         el('h2', { class: 'modal__title', id: 'modal-title', text: 'Saved' }),
         el('p', { class: 'modal__text',
-          text: `Choice recorded: “${label}” for ${proto.style} · ${proto.engine}. Return to your terminal — the session will continue there.` }),
+          text: `Choice recorded: “${label}” for ${proto.style} · ${engineLabel(proto.engine)}. Return to your terminal — the session will continue there.` }),
         doneBtn
       ])
     );

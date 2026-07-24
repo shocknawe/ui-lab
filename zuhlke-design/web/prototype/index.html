@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="/styles.css" />
 </head>
 <body>
-  <a class="skip-link" href="#grid">Skip to prototypes</a>
+  <a class="skip-link" href="#panels">Skip to prototypes</a>
 
   <header class="site-header">
-    <div class="site-header__inner">
+    <div class="site-header__top">
       <div class="brand">
         <span class="brand__mark" aria-hidden="true"></span>
         <div class="brand__text">
@@ -20,13 +20,14 @@
       </div>
       <div class="legend" aria-hidden="true">
         <span class="legend__item"><span class="legend__dot legend__dot--impeccable"></span>impeccable</span>
-        <span class="legend__item"><span class="legend__dot legend__dot--taste"></span>taste</span>
+        <span class="legend__item"><span class="legend__dot legend__dot--taste"></span>taste-skill</span>
       </div>
     </div>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Prototype styles"></nav>
   </header>
 
   <main class="page">
-    <section id="grid" class="rows" aria-label="Prototype comparison"></section>
+    <div id="panels" class="panels" aria-label="Prototype comparison"></div>
     <div id="state" class="state" hidden></div>
   </main>
 
