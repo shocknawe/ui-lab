@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pegs Library</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#grid">Skip to pegs</a>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <h1 class="brand__title">Pegs Library</h1>
+      </div>
+      <p class="count" id="count" aria-live="polite">Loading…</p>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="grid" class="grid" aria-label="Pegs">
+      <!-- cards injected by app.js -->
+    </section>
+
+    <div id="state" class="state" hidden></div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Image Picker</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#grid">Skip to images</a>
+
+  <header class="site-header" id="header">
+    <div class="site-header__inner">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <div class="brand__text">
+          <p class="brand__eyebrow">Image picker</p>
+          <h1 class="brand__title" id="prototype-name">Images</h1>
+          <p class="brand__meta" id="selection-status" aria-live="polite">Loading…</p>
+        </div>
+      </div>
+
+      <div class="actions" role="group" aria-label="Image actions">
+        <button class="btn btn--ghost" type="button" id="btn-regenerate" data-action="regenerate">
+          Regenerate
+        </button>
+        <button class="btn btn--ghost" type="button" id="btn-variations" data-action="variations" disabled aria-disabled="true">
+          Add color variations
+        </button>
+        <button class="btn btn--primary" type="button" id="btn-apply" data-action="apply" disabled aria-disabled="true">
+          Apply selected
+        </button>
+      </div>
+    </div>
+
+    <div class="banner" id="banner" role="status" aria-live="polite" hidden></div>
+  </header>
+
+  <main class="page">
+    <ul class="grid" id="grid" aria-label="Selectable images"></ul>
+    <div class="state" id="state" hidden></div>
+  </main>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prototype Compare</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#grid">Skip to prototypes</a>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <div class="brand__text">
+          <h1 class="brand__title" id="session-name">Prototypes</h1>
+          <p class="brand__brief" id="brief" aria-live="polite">Loading…</p>
+        </div>
+      </div>
+      <div class="legend" aria-hidden="true">
+        <span class="legend__item"><span class="legend__dot legend__dot--impeccable"></span>impeccable</span>
+        <span class="legend__item"><span class="legend__dot legend__dot--taste"></span>taste</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section id="grid" class="rows" aria-label="Prototype comparison"></section>
+    <div id="state" class="state" hidden></div>
+  </main>
+
+  <!-- Modal: built/populated by app.js; hidden by default -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+      <button class="modal__close" type="button" data-close aria-label="Close dialog">&times;</button>
+      <div class="modal__body" id="modal-body">
+        <!-- content swapped in by app.js -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>
