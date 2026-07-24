@@ -1,6 +1,6 @@
 ---
-name: Client Design Library
-description: A quiet, brand-neutral documentation chrome that defers to the client visual languages it showcases.
+name: Taste Workbench
+description: A quiet, tactile studio interface that keeps the chrome neutral so the prototypes and references it holds remain the only saturation in the room.
 colors:
   graphite-ink: "#1f2430"
   ink: "#1a1d24"
@@ -78,15 +78,15 @@ components:
     padding: "4px 10px"
 ---
 
-# Design System: Client Design Library
+# Design System: Taste Workbench
 
 ## 1. Overview
 
-**Creative North Star: "The Gallery Wall"**
+**Creative North Star: "The Taste Workbench"**
 
-This is a design library, so its own chrome behaves like the neutral wall and matting of a gallery: the frame is deliberately quiet so the work hung on it — each client's saturated visual language — carries all the color and voice in the room. The interface descends from the Linear / Vercel / Stripe-Docs lineage: generous whitespace, a graphite ink that reads near-black in light mode and near-white in dark mode, flat surfaces, and excellent Inter typography doing the heavy lifting. The only saturated color on any screen belongs to the client being showcased; the tool never competes with it.
+This is a working interface for people who make design decisions, not a gallery placard for finished work. The chrome behaves like a well-organized studio desk: quiet, tactile, and structurally subordinate to the references and prototypes laid out on top of it. It borrows discipline from the best documentation tools — generous whitespace, precise Inter typography, flat tonal layering, and an almost monochrome graphite palette — but it avoids the cold museum austerity of a "gallery wall."
 
-The system explicitly rejects the marketing-site reflex. No hero-metric templates, no persuasion gradients, no glassmorphism, no decorative accent stripes. It also rejects clutter of every kind — nothing is added that doesn't help a consultant understand a client's brand in five minutes. Density is comfortable, never cramped; hierarchy is carried by weight and scale, not by ornament.
+The frame's only job is to make the work on it look intentional. Saturated color, strong personality, and stylistic voice belong to the references, the pegs, and the generated prototypes. The tool itself never competes.
 
 **Key Characteristics:**
 - Graphite-neutral chrome; client color is the only saturation on screen.
