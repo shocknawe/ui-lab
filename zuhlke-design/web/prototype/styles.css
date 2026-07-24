@@ -21,7 +21,6 @@
   --shadow:      0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.08);
   --radius:      12px;
   --radius-sm:   8px;
-  --iframe-h:    calc(100vh - 200px);   /* tall; clamped below */
   --pad-x:       28px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -48,9 +47,13 @@
 /* ----- Reset / base ---------------------------------------------------- */
 *, *::before, *::after { box-sizing: border-box; }
 
+html { height: 100%; }
 html, body { max-width: 100%; }
 body {
   margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   font-family: var(--font);
   color: var(--fg);
   background: var(--bg);
@@ -71,8 +74,8 @@ h1, h2, p { margin: 0; }
   position: absolute;
   left: 12px;
   top: -48px;
-  background: var(--accent);
-  color: var(--accent-fg);
+  background: var(--fg);
+  color: var(--bg-elev);
   padding: 8px 14px;
   border-radius: var(--radius-sm);
   z-index: 100;
@@ -87,6 +90,7 @@ h1, h2, p { margin: 0; }
   position: sticky;
   top: 0;
   z-index: 20;
+  flex: 0 0 auto;
   background: color-mix(in srgb, var(--bg-elev) 90%, transparent);
   backdrop-filter: saturate(1.4) blur(12px);
   border-bottom: 1px solid var(--border);
@@ -103,7 +107,7 @@ h1, h2, p { margin: 0; }
 .brand__mark {
   width: 10px; height: 32px;
   border-radius: 3px;
-  background: var(--accent);
+  background: var(--fg-muted);
   flex: 0 0 auto;
 }
 .brand__text { min-width: 0; }
@@ -156,21 +160,36 @@ h1, h2, p { margin: 0; }
 .tab:hover { color: var(--fg); background: color-mix(in srgb, var(--fg) 6%, transparent); }
 .tab[aria-selected="true"] {
   color: var(--fg);
-  border-bottom-color: var(--accent);
+  border-bottom-color: var(--fg);
 }
 .tab:focus-visible { outline-offset: -2px; }
 
-/* ----- Layout ---------------------------------------------------------- */
+/* ----- Layout (full-height app-shell) ---------------------------------- */
 .page {
-  padding: 20px var(--pad-x) 28px;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  padding: 16px var(--pad-x);
+}
+.panels {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
 }
 .panels[hidden] { display: none; }
 
-.panel { animation: fade .16s ease; }
+.panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  animation: fade .16s ease;
+}
 .panel[hidden] { display: none; }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
 .pair {
+  flex: 1 1 auto;
+  min-height: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -186,6 +205,7 @@ h1, h2, p { margin: 0; }
   display: flex;
   flex-direction: column;
   min-width: 0;
+  min-height: 0;
   background: var(--bg-elev);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -228,7 +248,8 @@ h1, h2, p { margin: 0; }
 .cell__frame-wrap {
   position: relative;
   width: 100%;
-  height: clamp(480px, var(--iframe-h), 900px);
+  flex: 1 1 auto;
+  min-height: 0;
   background:
     repeating-conic-gradient(var(--bg-sunken) 0% 25%, transparent 0% 50%) 0 / 20px 20px;
 }
@@ -262,12 +283,13 @@ h1, h2, p { margin: 0; }
 .btn:active { transform: translateY(1px); }
 
 .btn--primary {
-  background: var(--accent);
-  color: var(--accent-fg);
-  border-color: var(--accent);
+  background: var(--fg);
+  color: var(--bg-elev);
+  border-color: var(--fg);
 }
 .btn--primary:hover {
-  background: color-mix(in srgb, var(--accent) 88%, #000);
+  background: color-mix(in srgb, var(--fg) 85%, var(--bg-elev));
+  border-color: color-mix(in srgb, var(--fg) 85%, var(--bg-elev));
 }
 .btn--block { width: 100%; justify-content: center; }
 .btn--ghost { background: transparent; }
@@ -381,10 +403,20 @@ h1, h2, p { margin: 0; }
 .is-busy { opacity: .7; pointer-events: none; }
 
 /* ----- Responsive ------------------------------------------------------ */
+/* Below 900px the two frames stack; drop the full-height shell and let the
+   page scroll so each prototype keeps a usable fixed height. */
 @media (max-width: 900px) {
   :root { --pad-x: 16px; }
-  .pair { grid-template-columns: 1fr; }
-  .cell__frame-wrap { height: clamp(420px, 70vh, 720px); }
-  .brand__brief { white-space: normal; -webkit-line-clamp: 2; }
+  body { display: block; min-height: 0; }
+  .page, .panels, .panel { display: block; flex: none; min-height: 0; }
+  .pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    flex: none;
+    min-height: 0;
+  }
+  .cell__frame-wrap { flex: none; height: clamp(420px, 70vh, 720px); }
+  .brand__brief { white-space: normal; }
   .legend { display: none; }
 }
