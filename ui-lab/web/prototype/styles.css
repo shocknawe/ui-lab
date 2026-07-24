@@ -294,6 +294,13 @@ h1, h2, p { margin: 0; }
 .btn--block { width: 100%; justify-content: center; }
 .btn--ghost { background: transparent; }
 
+/* Stacked action button: primary label with a quieter helper line beneath. */
+.btn--stacked { flex-direction: column; gap: 2px; padding-top: 10px; padding-bottom: 10px; line-height: 1.25; }
+.btn__label { font-weight: 600; }
+.btn__hint { font-size: .74rem; font-weight: 500; color: var(--fg-muted); }
+.btn--stacked:hover .btn__hint { color: var(--fg); }
+.btn--stacked.is-busy { flex-direction: row; }
+
 /* ----- Empty / error state -------------------------------------------- */
 .state {
   text-align: center;

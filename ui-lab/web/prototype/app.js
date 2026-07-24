@@ -248,6 +248,14 @@
       type: 'button',
       text: 'Refine this (3 variations)'
     });
+    const tweakBtn = el('button', {
+      class: 'btn btn--block btn--stacked',
+      type: 'button'
+    });
+    tweakBtn.append(
+      el('span', { class: 'btn__label', text: 'Refine this' }),
+      el('span', { class: 'btn__hint', text: 'open the live tweak studio' })
+    );
     const imagesBtn = el('button', {
       class: 'btn btn--block',
       type: 'button',
@@ -259,8 +267,10 @@
       text: 'Cancel'
     });
 
-    refineBtn.addEventListener('click', () => submit(proto, 'refine', errorBox, [refineBtn, imagesBtn, cancelBtn]));
-    imagesBtn.addEventListener('click', () => submit(proto, 'images', errorBox, [refineBtn, imagesBtn, cancelBtn]));
+    const all = [refineBtn, tweakBtn, imagesBtn, cancelBtn];
+    refineBtn.addEventListener('click', () => submit(proto, 'refine', errorBox, all, refineBtn));
+    tweakBtn.addEventListener('click',  () => submit(proto, 'tweak',  errorBox, all, tweakBtn));
+    imagesBtn.addEventListener('click', () => submit(proto, 'images', errorBox, all, imagesBtn));
     cancelBtn.addEventListener('click', closeModal);
 
     return el('div', {}, [
@@ -272,16 +282,15 @@
       el('p', { class: 'modal__text', id: 'modal-desc',
         text: 'Pick a next step for this prototype. Your choice is sent back to the terminal session.' }),
       errorBox,
-      el('div', { class: 'modal__actions' }, [refineBtn, imagesBtn, cancelBtn])
+      el('div', { class: 'modal__actions' }, [refineBtn, tweakBtn, imagesBtn, cancelBtn])
     ]);
   }
 
   /* ---- POST /select --------------------------------------------------- */
 
-  async function submit(proto, action, errorBox, buttons) {
+  async function submit(proto, action, errorBox, buttons, clicked) {
     errorBox.hidden = true;
-    const clicked = action === 'refine' ? buttons[0] : buttons[1];
-    const originalLabel = clicked.textContent;
+    const originalChildren = [...clicked.childNodes];
     buttons.forEach(b => (b.disabled = true));
     clicked.classList.add('is-busy');
     clicked.replaceChildren(el('span', { class: 'spinner' }), ' Saving…');
@@ -299,14 +308,15 @@
     } catch (err) {
       buttons.forEach(b => (b.disabled = false));
       clicked.classList.remove('is-busy');
-      clicked.textContent = originalLabel;
+      clicked.replaceChildren(...originalChildren);
       errorBox.textContent = `Could not save your choice: ${err.message}. Please try again.`;
       errorBox.hidden = false;
     }
   }
 
   function showSaved(proto, action) {
-    const label = action === 'refine' ? 'Refine this (3 variations)' : 'Populate images';
+    const labels = { refine: 'Refine this (3 variations)', tweak: 'Refine this', images: 'Populate images' };
+    const label = labels[action] || action;
     const doneBtn = el('button', { class: 'btn btn--primary btn--block', type: 'button', text: 'Close' });
     doneBtn.addEventListener('click', closeModal);
 

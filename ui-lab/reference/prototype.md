@@ -54,9 +54,9 @@ Start the viewer in the background and capture its URL:
 node scripts/gallery.mjs prototype --session <session>   # prints UI_LAB_URL=http://localhost:PORT
 ```
 
-Open the URL. The gallery lays the 10 out as **5 rows (styles) × 2 columns (impeccable left / taste right)**, each with a **"Continue with this"** button that opens a popup offering **"Refine this (3 variations)"** or **"Populate images"**.
+Open the URL. The gallery lays the 10 out as **5 rows (styles) × 2 columns (impeccable left / taste right)**, each with a **"Continue with this"** button that opens a popup offering three next steps: **"Refine this (3 variations)"**, **"Refine this"** (open the live tweak studio), or **"Populate images"**.
 
-> **Important:** clicking "Continue with this" only opens the choice popup. The selection is not saved until the user clicks one of the two popup actions.
+> **Important:** clicking "Continue with this" only opens the choice popup. The selection is not saved until the user clicks one of the popup actions.
 
 Before polling, record the current max timestamp so you only react to a *new* click:
 
@@ -78,7 +78,22 @@ This blocks until `~/.agents/.ui-lab/state/selected.json` contains a record with
 
 ## Step 5 — act on the choice (loop)
 
-- **`action: "refine"`** → generate **3 variations** of the chosen prototype, changing body/layout while keeping the aesthetic (vary format the way the transcript's Ledger / frames / index versions did). Write them into a fresh `prototypes/<session>-refine-N/` with a `data.json`. Use **one style per variation** and only the engine the user picked — the viewer will render a single column of 3 cells with no empty placeholders. Serve the gallery again and let the user pick again. Repeat until they're happy.
+- **`action: "refine"`** → generate **3 variations** of the chosen prototype, changing body/layout while keeping the aesthetic (vary format the way the transcript's Ledger / frames / index versions did). Write them into a fresh `prototypes/<session>-refine-N/` with a `data.json`.
+  - **Keep the original on screen.** Copy the originally-selected prototype file into the refine dir and list it **first** in `data.json` as its own style row, so the user can compare against it and fall back to it. Give it a distinct style label and reuse the picked engine so every row renders as a single column (no empty placeholder cells):
+    ```json
+    {
+      "session": "kestrel-2026-07-24-refine-1",
+      "styles": ["original (kept)", "variation-1", "variation-2", "variation-3"],
+      "prototypes": [
+        { "id": "vast-quiet__taste__original", "style": "original (kept)", "engine": "taste", "file": "vast-quiet__taste.html" },
+        { "id": "vast-quiet__v1", "style": "variation-1", "engine": "taste", "file": "vast-quiet__v1.html" },
+        { "id": "vast-quiet__v2", "style": "variation-2", "engine": "taste", "file": "vast-quiet__v2.html" },
+        { "id": "vast-quiet__v3", "style": "variation-3", "engine": "taste", "file": "vast-quiet__v3.html" }
+      ]
+    }
+    ```
+  - The viewer renders **4 single-column tabs** (original + v1/v2/v3). Serve the gallery again and let the user pick again. Repeat until they're happy.
+- **`action: "tweak"`** → hand off to `/ui-lab refine` (the live tweak studio) for the selected prototype — see `reference/refine.md`. The selection in `state/selected.json` names the target id.
 - **`action: "images"`** → hand off to `/ui-lab images` for the selected prototype (see `reference/images.md`). The selection in `state/selected.json` names the target prototype.
 
 Kill each server when its step is done. If the poll script times out, the user probably closed the popup without choosing; ask them what they'd like to do next.

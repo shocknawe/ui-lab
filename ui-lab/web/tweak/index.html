@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tweak Studio</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- The prototype, live -->
+  <div class="stage" id="stage">
+    <iframe id="frame" class="stage__frame" title="Live prototype preview"></iframe>
+    <div class="stage__empty" id="empty" hidden>
+      <h2>No prototype to tweak</h2>
+      <p id="empty-msg">This session has nothing selected. Pick a prototype first, then run <code>/ui-lab refine</code>.</p>
+    </div>
+  </div>
+
+  <!-- Reopen tab, shown when the dock is collapsed -->
+  <button class="reopen" id="reopen" type="button" hidden aria-label="Show tweak controls">
+    <span class="reopen__glyph" aria-hidden="true">⇤</span> Tweaks
+  </button>
+
+  <!-- Tweak dock -->
+  <aside class="dock" id="dock" aria-label="Design tweak controls">
+    <header class="dock__head">
+      <div class="dock__id">
+        <p class="dock__eyebrow">Tweak studio · live</p>
+        <h1 class="dock__title" id="proto-name">Prototype</h1>
+      </div>
+      <button class="dock__collapse" id="collapse" type="button" aria-label="Hide controls" title="Hide controls">⇥</button>
+    </header>
+
+    <div class="dock__scroll">
+      <div id="controls" class="controls"><!-- built by app.js --></div>
+    </div>
+
+    <footer class="dock__foot">
+      <div class="dock__foot-row">
+        <button class="btn btn--ghost" id="reset" type="button">Reset</button>
+        <button class="btn btn--ghost" id="randomize" type="button">Randomize</button>
+        <button class="btn btn--ghost" id="copy" type="button">Copy CSS</button>
+      </div>
+      <button class="btn btn--primary btn--block" id="apply" type="button">Apply &amp; save</button>
+    </footer>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="/app.js" defer></script>
+</body>
+</html>

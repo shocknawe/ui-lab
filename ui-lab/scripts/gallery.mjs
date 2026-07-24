@@ -17,9 +17,9 @@ const SKILL_ROOT = path.resolve(__dirname, '..');
 // ---- args -------------------------------------------------------------------
 const argv = process.argv.slice(2);
 const MODE = argv[0];
-const VALID = ['peg-library', 'prototype', 'images'];
+const VALID = ['peg-library', 'prototype', 'images', 'tweak'];
 if (!VALID.includes(MODE)) {
-  console.error(`Usage: node gallery.mjs <${VALID.join('|')}> [--session <id>] [--data <dir>] [--multi] [--port <n>]`);
+  console.error(`Usage: node gallery.mjs <${VALID.join('|')}> [--session <id>] [--id <protoId>] [--data <dir>] [--multi] [--port <n>]`);
   process.exit(1);
 }
 function flag(name) {
@@ -28,6 +28,7 @@ function flag(name) {
 }
 const DATA_DIR = flag('data') || path.join(os.homedir(), '.agents', '.ui-lab');
 const SESSION = flag('session');
+const PROTO_ID = flag('id');
 const MULTI = argv.includes('--multi');
 const WANT_PORT = flag('port') ? Number(flag('port')) : 4123;
 const WEB_DIR = path.join(SKILL_ROOT, 'web', MODE);
@@ -144,9 +145,36 @@ async function imagesData() {
   };
 }
 
+// tweak mode: one prototype opened in the live tweak studio. Resolves the
+// target from the session's data.json by --id (falls back to the last recorded
+// selection, then the first prototype in the session).
+async function tweakData() {
+  if (!SESSION) return { mode: 'tweak', session: null, id: null, src: null };
+  const sessDir = path.join(DATA_DIR, 'prototypes', SESSION);
+  const meta = await readJSON(path.join(sessDir, 'data.json'), { brief: '', prototypes: [] });
+  const protos = meta.prototypes || [];
+  let wantId = PROTO_ID;
+  if (!wantId) {
+    const sel = await readJSON(path.join(STATE_DIR, 'selected.json'), null);
+    if (sel && sel.id) wantId = sel.id;
+  }
+  const proto = protos.find(p => p.id === wantId) || protos[0] || null;
+  if (!proto) return { mode: 'tweak', session: SESSION, id: null, src: null, brief: meta.brief || '' };
+  return {
+    mode: 'tweak',
+    session: SESSION,
+    id: proto.id,
+    style: proto.style || '',
+    engine: proto.engine || '',
+    brief: meta.brief || '',
+    src: proto.src || `/proto/${encodeURIComponent(proto.file)}`,
+  };
+}
+
 async function dataForMode() {
   if (MODE === 'peg-library') return pegLibraryData();
   if (MODE === 'prototype') return prototypeData();
+  if (MODE === 'tweak') return tweakData();
   return imagesData();
 }
 
@@ -155,6 +183,37 @@ async function writeSelection(body) {
   const record = { ...body, ts: Date.now() };
   await fs.writeFile(path.join(STATE_DIR, 'selected.json'), JSON.stringify(record, null, 2));
   return record;
+}
+
+// Bake the tweak studio's live CSS permanently into a copy of the prototype.
+// Reads the source HTML from the session, injects a single <style id="ui-lab-tweaks">
+// before </head> (fallback: end of <body>, else appended), and writes
+// "<id>__tweaked.html" beside it. Returns the new file name.
+async function bakeTweak(id, css) {
+  const sessDir = path.join(DATA_DIR, 'prototypes', SESSION);
+  const meta = await readJSON(path.join(sessDir, 'data.json'), { prototypes: [] });
+  const proto = (meta.prototypes || []).find(p => p.id === id);
+  const srcFile = proto?.file || (id ? `${id}.html` : null);
+  if (!srcFile) throw new Error(`Unknown prototype id: ${id}`);
+
+  const srcPath = path.join(sessDir, srcFile);
+  // Keep reads/writes inside the session dir (path-traversal guard).
+  const resolvedSrc = path.resolve(srcPath);
+  if (!resolvedSrc.startsWith(path.resolve(sessDir) + path.sep)) throw new Error('Forbidden path');
+
+  const html = await fs.readFile(srcPath, 'utf8');
+  const block = `<style id="ui-lab-tweaks">\n${css || ''}\n</style>`;
+  let baked;
+  if (/<\/head>/i.test(html)) baked = html.replace(/<\/head>/i, `${block}\n</head>`);
+  else if (/<\/body>/i.test(html)) baked = html.replace(/<\/body>/i, `${block}\n</body>`);
+  else baked = html + `\n${block}\n`;
+
+  const base = srcFile.replace(/\.html?$/i, '');
+  const outFile = `${base}__tweaked.html`;
+  const outPath = path.resolve(path.join(sessDir, outFile));
+  if (!outPath.startsWith(path.resolve(sessDir) + path.sep)) throw new Error('Forbidden path');
+  await fs.writeFile(outPath, baked);
+  return outFile;
 }
 
 // ---- request handler --------------------------------------------------------
@@ -168,6 +227,13 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       try {
         const body = raw ? JSON.parse(raw) : {};
+        // tweak mode apply → bake the live CSS into a saved copy, then record it.
+        if (MODE === 'tweak' && pathname === '/apply' && body.action === 'apply' && SESSION) {
+          const file = await bakeTweak(body.id, body.css);
+          const rec = await writeSelection({ kind: 'tweak', id: body.id, action: 'apply', file });
+          send(res, 200, JSON.stringify({ ok: true, saved: rec }), 'application/json; charset=utf-8');
+          return;
+        }
         const rec = await writeSelection(body);
         send(res, 200, JSON.stringify({ ok: true, saved: rec }), 'application/json; charset=utf-8');
       } catch (e) {

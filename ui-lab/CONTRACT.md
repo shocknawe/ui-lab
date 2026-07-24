@@ -3,10 +3,11 @@
 `scripts/gallery.mjs` is one Node server (built-in modules only) run as:
 
 ```
-node gallery.mjs <mode> [--session <id>] [--data <dir>] [--multi] [--port <n>]
+node gallery.mjs <mode> [--session <id>] [--id <protoId>] [--data <dir>] [--multi] [--port <n>]
 ```
 
-- `<mode>` ∈ `peg-library` | `prototype` | `images` — selects which `web/<mode>/` folder is served at `/`.
+- `<mode>` ∈ `peg-library` | `prototype` | `images` | `tweak` — selects which `web/<mode>/` folder is served at `/`.
+- `--id <protoId>` (tweak mode) names which prototype in the session to open in the studio; falls back to the last recorded selection, then the session's first prototype.
 - `--data` defaults to `~/.agents/.ui-lab` (resolved via `os.homedir()`).
 - On boot the server picks a free port (start 4123, increment if busy) and prints exactly one line: `UI_LAB_URL=http://localhost:<port>` so the caller can capture it.
 - No `alert`/`confirm`/`prompt` anywhere. Confirmation UI is in-page DOM.
@@ -21,7 +22,7 @@ node gallery.mjs <mode> [--session <id>] [--data <dir>] [--multi] [--port <n>]
 | `/media/*` | GET | binary assets (peg images, generated images) from the data dir |
 | `/proto/*` | GET | prototype HTML files (prototype mode only) |
 | `/select` | POST | records a choice → writes `state/selected.json`, returns `{"ok":true}` |
-| `/apply` | POST | images mode apply → writes `state/selected.json`, returns `{"ok":true}` |
+| `/apply` | POST | images apply, **or** tweak apply (bakes CSS into a saved copy) → writes `state/selected.json`, returns `{"ok":true,"saved":…}` |
 
 The page must show an in-page "Saved — return to your terminal" confirmation after a successful POST. The skill polls `state/selected.json` for the result; the server stays up until the caller kills it.
 
@@ -60,8 +61,9 @@ Render each peg as a card: thumbnail + design_family badge + keyword chips, with
 ```
 Layout: **one row per style (in `styles` order).** When both engines are present for a style, render **two columns — `engine:"impeccable"` LEFT, `engine:"taste"` RIGHT**. When only one engine is present (e.g. a refine session), render a **single column** and omit empty placeholder cells. Each cell is an `<iframe src=…>` with the engine + style labelled, and a **"Continue with this"** button.
 
-Clicking "Continue with this" opens an **in-page popup** confirming the pick, with two next-step buttons:
+Clicking "Continue with this" opens an **in-page popup** confirming the pick, with three next-step buttons:
 - **"Refine this (3 variations)"** → `POST /select {"kind":"prototype","id":"<id>","action":"refine"}`
+- **"Refine this"** (opens the live tweak studio) → `POST /select {"kind":"prototype","id":"<id>","action":"tweak"}`
 - **"Populate images"** → `POST /select {"kind":"prototype","id":"<id>","action":"images"}`
 
 ### images
@@ -83,13 +85,33 @@ Layout: **sticky header** (stays pinned on scroll) over a responsive **thumbnail
 
 Selection: single-select when `multiSelect:false`, multi-select (checkbox-style) when `true`. Selected thumbnails get a clear visual state.
 
+### tweak
+```json
+{
+  "mode": "tweak",
+  "session": "kestrel-2026-07-24",
+  "id": "vast-quiet__taste",
+  "style": "vast-quiet",
+  "engine": "taste",
+  "brief": "Landing page for Kestrel…",
+  "src": "/proto/vast-quiet__taste.html"
+}
+```
+Layout: **full-bleed `<iframe src=…>`** of the prototype + a floating, collapsible **tweak dock**. Every control mutates the prototype **live** by (re)injecting a single `<style id="ui-lab-tweaks">` into the iframe document (whole-page scope; combines candidate CSS-variable names with element-level `!important` overrides). Controls span typography (body/heading font, scale, size, line-height, letter-spacing, weight, uppercase), color (accent/bg/text/surface/border, palette presets, invert), and shape/space (radius, content width, shadow), plus Reset / Randomize / Copy CSS.
+
+**Apply & save** → `POST /apply {"kind":"tweak","id":"<id>","action":"apply","css":"<generated CSS>"}`. The server **bakes**: it reads the source prototype HTML, injects `<style id="ui-lab-tweaks">…</style>` before `</head>` (fallback: end of `<body>`), writes `<session>/<id>__tweaked.html`, and records `state/selected.json` = `{"kind":"tweak","id":"<id>","action":"apply","file":"<id>__tweaked.html","ts":…}`. The response includes `saved.file`. The page then shows an in-page "Saved — return to your terminal" confirmation.
+
 ## POST bodies → `state/selected.json`
 
 The server writes the POSTed body plus a `ts` (epoch ms) to `state/selected.json` verbatim. Examples the skill will read back:
 ```json
 { "kind": "prototype", "id": "vast-quiet__taste", "action": "refine", "ts": 1753372800000 }
+{ "kind": "prototype", "id": "vast-quiet__taste", "action": "tweak",  "ts": 1753372800000 }
 { "kind": "images", "action": "apply", "ids": ["img-1"], "ts": 1753372800000 }
+{ "kind": "tweak", "id": "vast-quiet__taste", "action": "apply", "file": "vast-quiet__taste__tweaked.html", "ts": 1753372800000 }
 ```
+
+> Tweak apply is the one `/apply` that does more than record: `gallery.mjs` bakes the CSS into `<id>__tweaked.html` before writing `selected.json` (see the tweak section above).
 
 ## Shared UI rules for all three viewers
 - Self-contained: inline CSS/JS or same-folder `styles.css`/`app.js`. **No external CDNs, fonts, or network calls.**

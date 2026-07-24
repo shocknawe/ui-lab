@@ -12,7 +12,7 @@ description: >-
   "generate a hero image for this page" — even when the user doesn't name the
   skill. Runs as /ui-lab [install | pegs | prototype | images].
 user-invocable: true
-argument-hint: "[install · pegs [<image>|library] · prototype <brief> · images]"
+argument-hint: "[install · pegs [<image>|library] · prototype <brief> · refine · images]"
 allowed-tools:
   - Bash(node *)
 ---
@@ -42,6 +42,7 @@ Data layout:
 | `pegs <image.jpg>` | Add a peg: copy the image into the library and vision-tag it. | [reference/pegs.md](reference/pegs.md) |
 | `pegs library` | Open the localhost gallery of all pegs. | [reference/pegs.md](reference/pegs.md) |
 | `prototype "<brief>"` | Generate 10 prototypes (5 styles × impeccable/taste), pick one in a gallery, refine in a loop. | [reference/prototype.md](reference/prototype.md) |
+| `refine` | Open the selected prototype in the **live tweak studio** — a localhost page with a tweak bar (fonts, colors, sizing, shape) that mutates the design in real time; Apply bakes the tweaks into a saved copy. | [reference/refine.md](reference/refine.md) |
 | `images` | Generate hero imagery (Higgsfield) for the selected prototype and pick in a thumbnail viewer. | [reference/images.md](reference/images.md) |
 
 ## Routing
@@ -49,7 +50,8 @@ Data layout:
 1. Read the argument. The **first word** selects the command; the rest is its target/brief.
 2. **Load the matching `reference/<command>.md` and follow it** — each reference owns that command's full flow. This is non-optional; the SKILL.md table is just the map.
 3. `pegs` with a second word `library` → view mode; `pegs` with a path → add mode. See `reference/pegs.md`.
-4. **No argument**: briefly list the commands above and ask what they want to do. If the library is empty, suggest starting with `pegs`. If `impeccable`/`design-taste-frontend` aren't installed, suggest `install` before `prototype`.
+4. When the prototype gallery records `action:"tweak"` (the modal's "Refine this" button), continue by running `refine` — load `reference/refine.md`. (`action:"refine"` still means the 3-variations flow in `reference/prototype.md`.)
+5. **No argument**: briefly list the commands above and ask what they want to do. If the library is empty, suggest starting with `pegs`. If `impeccable`/`design-taste-frontend` aren't installed, suggest `install` before `prototype`.
 
 ## Serving a viewer (shared mechanic)
 
