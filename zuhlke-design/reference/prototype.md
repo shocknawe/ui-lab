@@ -78,7 +78,7 @@ This blocks until `~/.agents/.zuhlke-design/state/selected.json` contains a reco
 
 ## Step 5 — act on the choice (loop)
 
-- **`action: "refine"`** → generate **3 variations** of the chosen prototype, changing body/layout while keeping the aesthetic (vary format the way the transcript's Ledger / frames / index versions did). Write them into a fresh `prototypes/<session>-refine-N/` with a `data.json` (reuse the same 2-column shape, or a single column of 3 — set `styles` accordingly), serve the gallery again, and let the user pick again. Repeat until they're happy.
+- **`action: "refine"`** → generate **3 variations** of the chosen prototype, changing body/layout while keeping the aesthetic (vary format the way the transcript's Ledger / frames / index versions did). Write them into a fresh `prototypes/<session>-refine-N/` with a `data.json`. Use **one style per variation** and only the engine the user picked — the viewer will render a single column of 3 cells with no empty placeholders. Serve the gallery again and let the user pick again. Repeat until they're happy.
 - **`action: "images"`** → hand off to `/zuhlke-design images` for the selected prototype (see `reference/images.md`). The selection in `state/selected.json` names the target prototype.
 
 Kill each server when its step is done. If the poll script times out, the user probably closed the popup without choosing; ask them what they'd like to do next.

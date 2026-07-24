@@ -104,12 +104,16 @@
       const impeccable = byStyleEngine.get(`${style}__impeccable`);
       const taste      = byStyleEngine.get(`${style}__taste`);
 
-      const pair = el('div', { class: 'pair' });
-      // impeccable LEFT, taste RIGHT
-      pair.append(
-        impeccable ? cell(impeccable, style) : missingCell('impeccable', style),
-        taste      ? cell(taste, style)      : missingCell('taste', style)
-      );
+      const cells = [];
+      if (impeccable) cells.push(cell(impeccable, style));
+      if (taste)      cells.push(cell(taste, style));
+
+      // Refine sessions contain only one engine per style (3 variations of the
+      // picked prototype). Single-engine rows render as one column so there are
+      // no empty placeholder cells.
+      const pairClass = cells.length === 1 ? 'pair pair--single' : 'pair';
+      const pair = el('div', { class: pairClass });
+      pair.append(...cells);
 
       return el('section', { class: 'style-row', 'aria-label': `Style: ${style}` }, [
         el('div', { class: 'style-row__head' }, [
@@ -123,21 +127,6 @@
     grid.replaceChildren(...rows);
     grid.hidden = false;
     stateEl.hidden = true;
-  }
-
-  function missingCell(engine, style) {
-    const engineClass = engine === 'taste' ? 'taste' : 'impeccable';
-    return el('div', { class: 'cell' }, [
-      el('div', { class: 'cell__bar' }, [
-        el('div', { class: 'cell__labels' }, [
-          el('span', { class: `engine-tag engine-tag--${engineClass}`, text: engine }),
-          el('span', { class: 'cell__style', text: style })
-        ])
-      ]),
-      el('div', { class: 'cell__frame-wrap', style: 'display:grid;place-items:center;' }, [
-        el('p', { style: 'color:var(--fg-faint);font-size:.85rem;', text: 'No prototype for this cell' })
-      ])
-    ]);
   }
 
   /* ---- modal ---------------------------------------------------------- */

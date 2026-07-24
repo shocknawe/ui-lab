@@ -58,7 +58,7 @@ Render each peg as a card: thumbnail + design_family badge + keyword chips, with
   ]
 }
 ```
-Layout: **one row per style (in `styles` order), two columns — `engine:"impeccable"` LEFT, `engine:"taste"` RIGHT.** Each cell is an `<iframe src=…>` with the engine + style labelled, and a **"Continue with this"** button.
+Layout: **one row per style (in `styles` order).** When both engines are present for a style, render **two columns — `engine:"impeccable"` LEFT, `engine:"taste"` RIGHT**. When only one engine is present (e.g. a refine session), render a **single column** and omit empty placeholder cells. Each cell is an `<iframe src=…>` with the engine + style labelled, and a **"Continue with this"** button.
 
 Clicking "Continue with this" opens an **in-page popup** confirming the pick, with two next-step buttons:
 - **"Refine this (3 variations)"** → `POST /select {"kind":"prototype","id":"<id>","action":"refine"}`
