@@ -48,11 +48,30 @@ Write outputs to `~/.agents/.zuhlke-design/prototypes/<session>/`:
 
 ## Step 4 — show the gallery, let them pick
 
+Start the viewer in the background and capture its URL:
+
 ```bash
 node scripts/gallery.mjs prototype --session <session>   # prints ZUHLKE_URL=http://localhost:PORT
 ```
 
-Open the URL. The gallery lays the 10 out as **5 rows (styles) × 2 columns (impeccable left / taste right)**, each with a **"Continue with this"** button that opens a popup offering **"Refine this (3 variations)"** or **"Populate images"**. Poll `~/.agents/.zuhlke-design/state/selected.json` for the choice:
+Open the URL. The gallery lays the 10 out as **5 rows (styles) × 2 columns (impeccable left / taste right)**, each with a **"Continue with this"** button that opens a popup offering **"Refine this (3 variations)"** or **"Populate images"**.
+
+> **Important:** clicking "Continue with this" only opens the choice popup. The selection is not saved until the user clicks one of the two popup actions.
+
+Before polling, record the current max timestamp so you only react to a *new* click:
+
+```bash
+SINCE=$(node -e 'console.log(Date.now())')
+```
+
+Then wait for a fresh selection:
+
+```bash
+node scripts/poll-selection.mjs --since "$SINCE"
+```
+
+This blocks until `~/.agents/.zuhlke-design/state/selected.json` contains a record with a newer `ts`, then prints it:
+
 ```json
 { "kind": "prototype", "id": "vast-quiet__taste", "action": "refine", "ts": 1753372800000 }
 ```
@@ -62,4 +81,4 @@ Open the URL. The gallery lays the 10 out as **5 rows (styles) × 2 columns (imp
 - **`action: "refine"`** → generate **3 variations** of the chosen prototype, changing body/layout while keeping the aesthetic (vary format the way the transcript's Ledger / frames / index versions did). Write them into a fresh `prototypes/<session>-refine-N/` with a `data.json` (reuse the same 2-column shape, or a single column of 3 — set `styles` accordingly), serve the gallery again, and let the user pick again. Repeat until they're happy.
 - **`action: "images"`** → hand off to `/zuhlke-design images` for the selected prototype (see `reference/images.md`). The selection in `state/selected.json` names the target prototype.
 
-Kill each server when its step is done.
+Kill each server when its step is done. If the poll script times out, the user probably closed the popup without choosing; ask them what they'd like to do next.

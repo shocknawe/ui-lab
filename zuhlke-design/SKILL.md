@@ -53,10 +53,13 @@ Data layout:
 
 ## Serving a viewer (shared mechanic)
 
-Every viewer is launched the same way. Run the server in the background, capture the printed URL, open it, then poll `state/selected.json` for the user's choice:
+Every viewer is launched the same way. Run the server in the background, capture the printed URL, open it, then wait for a fresh selection:
 
 ```bash
 node scripts/gallery.mjs <mode> [--session <id>] [--multi]   # prints ZUHLKE_URL=http://localhost:PORT
+
+SINCE=$(node -e 'console.log(Date.now())')
+node scripts/poll-selection.mjs --since "$SINCE"               # blocks until the user clicks
 ```
 
-Open the URL for the user (they view/click in the browser), then read `~/.agents/.zuhlke-design/state/selected.json` to learn what they picked. Kill the server when the step is done. Never let the server trigger blocking dialogs.
+`poll-selection.mjs` returns the selected record from `~/.agents/.zuhlke-design/state/selected.json` only when its `ts` is newer than `$SINCE`, so stale selections from earlier steps are ignored. Open the URL for the user, then run the poll script to learn what they picked. Kill the server when the step is done. Never let the server trigger blocking dialogs.

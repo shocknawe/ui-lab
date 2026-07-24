@@ -36,7 +36,16 @@ Set `multiSelect: true` only if the user is populating several assets at once; d
 node scripts/gallery.mjs images --session <session>          # add --multi for multi-select
 ```
 
-Open the printed URL. The viewer is a **sticky header** over a **thumbnail grid**; selecting thumbnails enables the header actions. Poll `~/.agents/.zuhlke-design/state/selected.json`:
+Open the printed URL. The viewer is a **sticky header** over a **thumbnail grid**; selecting thumbnails enables the header actions.
+
+Record the current timestamp, then wait for a fresh selection:
+
+```bash
+SINCE=$(node -e 'console.log(Date.now())')
+node scripts/poll-selection.mjs --since "$SINCE"
+```
+
+It returns the saved `~/.agents/.zuhlke-design/state/selected.json` once the user clicks an action:
 ```json
 { "kind": "images", "action": "apply", "ids": ["img-4"], "ts": 1753372800000 }
 ```
